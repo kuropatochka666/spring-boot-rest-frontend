@@ -1,13 +1,41 @@
 import React, {useEffect, useState} from 'react';
 import {getUsers, getUser} from '../services/UserService';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
 
 const UserComponent = () => {
-    const [state, setState] = useState({});
+    const [allUsers, setAllUsers] = useState({});
     useEffect(() => {
         getUsers().then((response) => {
-            setState({ users: response.data})
+            setAllUsers({users: response.data})
         });
-    },[]);
+    }, []);
+
+    function CurrentUser(props) {
+        const [user, setUser] = useState({});
+        useEffect(() => {
+            getUser(props.userId).then((response) => {
+                setUser({currentUser: response.data})
+            });
+        }, []);
+        return (
+            <tr>
+                {
+                    user.currentUser && <tr>
+                        <td>{user.currentUser.id}</td>
+                        <td>{user.currentUser.firstName}</td>
+                        <td>{user.currentUser.secondName}</td>
+                        <td>{user.currentUser.email}</td>
+                    </tr>
+                }
+            </tr>
+        );
+    }
+
     return (
         <div>
             <h1 className="text-center"> Users List</h1>
@@ -21,14 +49,22 @@ const UserComponent = () => {
                 </tr>
                 </thead>
                 <tbody>
-                {
-                    state.users && state.users.map(user => <tr>
-                        <td>{user.id}</td>
-                        <td>{user.firstName}</td>
-                        <td>{user.secondName}</td>
-                        <td>{user.email}</td>
-                    </tr>)
-                }
+                <Router>
+                    {
+                        allUsers.users && allUsers.users.map(user => <tr key={user.id}>
+                                <td><Link to={`/${user.id}`}> {user.id}</Link></td>
+                                <td>{user.firstName}</td>
+                                <td>{user.secondName}</td>
+                                <td>{user.email}</td>
+                                <Route path={`/${user.id}`}>
+                                    <CurrentUser userId={user.id}/>
+                                </Route>
+                            </tr>
+                        )
+                    }
+
+
+                </Router>
                 </tbody>
             </table>
 
