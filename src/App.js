@@ -1,6 +1,6 @@
 
 import './App.css';
-import UserComponent from "./components/UserComponent";
+import UserComponent from "./components/allUsers/UserComponent";
 
 function App() {
   return (
