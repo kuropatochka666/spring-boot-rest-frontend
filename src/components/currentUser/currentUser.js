@@ -1,44 +1,64 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {deleteUser, getUser, putUser} from "../../services/UserService";
 import {Link} from "react-router-dom";
 import {useForm} from "react-hook-form";
+import {connect} from 'react-redux'
+import {AddUser, UpdateUser, RemoveUser} from "../../store/actionCreators/actionCreator";
 
-export function CurrentUser(props) {
-    const [user, setUser] = useState({});
+function CurrentUser(props) {
     const {register, handleSubmit} = useForm();
     useEffect(() => {
         getUser(props.userId).then((response) => {
-            setUser({currentUser: response.data})
+            AddUser(response.data)
         });
     }, []);
     const onSubmit = (data) => {
-        putUser(data, user.currentUser.id);
-
+        console.log(data);
+        UpdateUser(data, props.userId)
+        putUser(data, props.userId);
     }
+    const currentUser = props.usersInfo.find(user => user.id === props.userId);
+    console.log(currentUser);
     return (
         <div>
             {
-                user.currentUser &&
+                currentUser &&
                 <div>
                     <Link to="/home">back</Link>
-                    <div>{user.currentUser.id}</div>
-                    <div>{user.currentUser.firstName}</div>
-                    <div>{user.currentUser.secondName}</div>
-                    <div>{user.currentUser.email}</div>
+                    <div>{currentUser.id}</div>
+                    <div>{currentUser.firstName}</div>
+                    <div>{currentUser.secondName}</div>
+                    <div>{currentUser.email}</div>
 
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <input {...register("firstName")} placeholder="First name"
-                               defaultValue={user.currentUser.firstName}/>
+                               defaultValue={currentUser.firstName}/>
                         <input {...register("secondName")} placeholder="Second name"
-                               defaultValue={user.currentUser.secondName}/>
+                               defaultValue={currentUser.secondName}/>
                         <input {...register("email")} placeholder="Email"
-                               defaultValue={user.currentUser.email}/>
+                               defaultValue={currentUser.email}/>
                         <input type="submit"/>
                     </form>
-                    <div onClick={() => deleteUser(user.currentUser.id)}>Удалить</div>
+                    <input type="submit" value="Удалить" onClick={() => deleteUser(currentUser.id)}/>
                 </div>
             }
 
         </div>
     );
 }
+
+const mapStateToProps = state => {
+    console.log(state.users);
+    return {
+        usersInfo: state.users
+    };
+}
+const mapDispatchToProps = {
+    AddUser,
+    UpdateUser,
+    RemoveUser
+
+
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CurrentUser)
