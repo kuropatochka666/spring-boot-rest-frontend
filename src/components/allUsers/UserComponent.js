@@ -4,7 +4,8 @@ import {BrowserRouter as Router, Link, Route, Switch} from "react-router-dom";
 import CurrentUser from "../currentUser/currentUser";
 import {useForm} from "react-hook-form";
 import {connect} from "react-redux";
-import {AddUser} from "../../store/actionCreators/actionCreator"
+import {AddUser, RemoveUser, UpdateUser} from "../../store/actionCreators/actionCreator"
+import currentUser from "../currentUser/currentUser";
 
 
 const UserComponent = (props) => {
@@ -22,15 +23,12 @@ const UserComponent = (props) => {
 
 
     return (
-
         <Router>
-
             <Switch>
                 <Route exact path="/home">
                     {
 
                         props.usersInfo && props.usersInfo.map(user =>
-
                             <div key={user.id}>
                                 <div><Link to={`/home/${user.id}`}> {user.id}</Link></div>
                                 <div>{user.firstName} </div>
@@ -48,17 +46,11 @@ const UserComponent = (props) => {
                     </form>
 
                 </Route>
-                {
-                    props.usersInfo && props.usersInfo.map(user =>
-                        <Route path={`/home/${user.id}`} key={user.id}>
-                            <CurrentUser userId={user.id}/>
-                        </Route>
-                    )
-                }
+                <Route path="/home/:id" render={(props)=> <CurrentUser {...props}/>}/>
+
             </Switch>
         </Router>
     )
-
 }
 
 const mapStateToProps = state => {
@@ -68,9 +60,9 @@ const mapStateToProps = state => {
     };
 }
 const mapDispatchToProps = {
-    AddUser
-
-
+    AddUser,
+    UpdateUser,
+    RemoveUser
 }
 
 

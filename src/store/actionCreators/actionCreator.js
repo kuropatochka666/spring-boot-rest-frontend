@@ -12,10 +12,10 @@ export function UpdateUser(value, id) {
         userId: id,
         payload: value
     };
-}export function RemoveUser(value) {
+}export function RemoveUser(id) {
     return {
         type: RemoveUserAction,
-        payload: value
+        userId: id,
     };
 }
 

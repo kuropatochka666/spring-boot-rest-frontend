@@ -1,30 +1,41 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {deleteUser, getUser, putUser} from "../../services/UserService";
 import {Link} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import {connect} from 'react-redux'
 import {AddUser, UpdateUser, RemoveUser} from "../../store/actionCreators/actionCreator";
+import store from "../../store/store";
 
 function CurrentUser(props) {
     const {register, handleSubmit} = useForm();
+    const userId = Number(props.match.params.id);
+    const currentUser = props.usersInfo.find(user => user.id === userId);
+
     useEffect(() => {
-        getUser(props.userId).then((response) => {
+        getUser(userId).then((response) => {
             AddUser(response.data)
         });
-    }, []);
+
+    }, [props.usersInfo]);
     const onSubmit = (data) => {
         console.log(data);
-        UpdateUser(data, props.userId)
-        putUser(data, props.userId);
+        props.UpdateUser(data, userId)
+        putUser(data, userId);
     }
-    const currentUser = props.usersInfo.find(user => user.id === props.userId);
+    const delUser = () => {
+        console.log('allUsers', store.getState());
+        props.RemoveUser(userId);
+        deleteUser(currentUser.id);
+    }
+
     console.log(currentUser);
     return (
         <div>
+            <Link to="/home">back</Link>
             {
-                currentUser &&
+                currentUser ?(
                 <div>
-                    <Link to="/home">back</Link>
+
                     <div>{currentUser.id}</div>
                     <div>{currentUser.firstName}</div>
                     <div>{currentUser.secondName}</div>
@@ -39,8 +50,8 @@ function CurrentUser(props) {
                                defaultValue={currentUser.email}/>
                         <input type="submit"/>
                     </form>
-                    <input type="submit" value="Удалить" onClick={() => deleteUser(currentUser.id)}/>
-                </div>
+                    <input type="submit" value="Удалить" onClick={() => delUser()}/>
+                </div>) : (<div>Такого пользователя нет</div>)
             }
 
         </div>
@@ -57,8 +68,6 @@ const mapDispatchToProps = {
     AddUser,
     UpdateUser,
     RemoveUser
-
-
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CurrentUser)
