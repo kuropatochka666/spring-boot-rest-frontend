@@ -7,7 +7,9 @@ import {connect} from "react-redux";
 import {AddUser, RemoveUser, UpdateUser} from "../../store/actionCreators/actionCreator"
 import currentUser from "../currentUser/currentUser";
 
-
+const styles = {
+    border: '1px solid rgba(0, 0, 0, 0.05)',
+};
 const UserComponent = (props) => {
     const {register, handleSubmit} = useForm();
 
@@ -20,7 +22,10 @@ const UserComponent = (props) => {
         props.AddUser(data)
         addUser(data);
     }
+const styles = {
+    border: '1px solid rgba(0, 0, 0, 0.05)',
 
+}
 
     return (
         <Router>
@@ -29,7 +34,7 @@ const UserComponent = (props) => {
                     {
 
                         props.usersInfo && props.usersInfo.map(user =>
-                            <div key={user.id}>
+                            <div key={user.id} style={{styles}}>
                                 <div><Link to={`/home/${user.id}`}> {user.id}</Link></div>
                                 <div>{user.firstName} </div>
                                 <div>{user.secondName} </div>
